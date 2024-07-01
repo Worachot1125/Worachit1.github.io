@@ -15,18 +15,38 @@
     <script>
       function addtodo() {
         const inputValue = document.getElementById("input").value;
-        //create new element <li>
-        let newElement = document.createElement("li"); //<li></li>
-        newElement.classList.add("list-group-item"); //<li class="list-group-item"><
-        let newTxtElement = document.createTextNode(inputValue); //create Text
-        newElement.appendChild(newTxtElement); //<li>Text</li>
+
+        // Create new element <li>
+        let newElement = document.createElement("li");
+        newElement.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+
+        let newTxtElement = document.createTextNode(inputValue);
+        newElement.appendChild(newTxtElement);
+
+        // Create a container for the delete button
+        let buttonContainer = document.createElement("div");
+        buttonContainer.classList.add("col-auto");
+
+        // Create delete button
+        let deleteElement = document.createElement("button");
+        deleteElement.classList.add("btn", "btn-delete", "btn-sm");
+        deleteElement.textContent = "Delete";
+        deleteElement.onclick = function() {
+          newElement.remove();
+        };
+
+        buttonContainer.appendChild(deleteElement);
+        newElement.appendChild(buttonContainer);
 
         let listElement = document.getElementById("listtodo");
         listElement.appendChild(newElement);
+
+        // Clear the input field
+        document.getElementById("input").value = "";
       }
     </script>
     <div class="container">
-      <h1 class="my-3">My to-do</h1>
+      <h1 class="my-3">My To Do</h1>
       <div class="row">
         <div class="col col-md-4 col-sm-12">
           <div class="input-group mb-3">
@@ -39,7 +59,8 @@
               aria-describedby="button-add"
             />
             <button
-              class="btn btn-primary"
+              class="btn"
+              style="background-color: aquamarine;"
               type="button"
               id="button-add"
               onclick="addtodo()"
@@ -50,7 +71,12 @@
         </div>
         <div class="col col-md-8 col-sm-12">
           <ul class="list-group" id="listtodo">
-            <li class="list-group-item">An item</li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              An item
+              <div class="col-auto">
+                <button class="btn btn-delete btn-sm" style="background-color: rgba(235, 68, 115, 0.67);" onclick="this.parentElement.parentElement.remove()">Delete</button>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
