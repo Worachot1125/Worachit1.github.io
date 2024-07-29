@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Details</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous"
+    />
+    <style>
+        body {
+            background-color: #c4ece0;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: #1bedda;
+            text-shadow: 2px 2px #88a3a0;
+            font-family: Impact, Charcoal, sans-serif;
+            font-size: 120px;
+        }
+        .card {
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease-in-out;
+            border: 2px solid #10f3af;
+            border-radius: 17px;
+        }
+        .load-more-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .load-more-container button {
+            background-color: #1bedda;
+            border-color: #1bedda;
+            color: #fff;
+        }
+        .load-more-container button:hover {
+            background-color: #ffa07a;
+            border-color: #ffa07a;
+        }
+        .btn-custom {
+          font-family: Impact, Charcoal, sans-serif;
+            background-color: #1bedda;
+            border-color: #1bedda;
+            color: #ffffff;
+        }
+        .btn-custom:hover {
+          font-family: Impact, Charcoal, sans-serif;
+            background-color: #1bedda;
+            border-color: #1bedda;
+        }
+        .font{
+            color: #000000;
+            text-shadow: 0.5px 0.5px #88a3a0;
+            font-family: Impact, Charcoal, sans-serif;
+            font-size: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="pokemon-name">Loading To Details</h1>
+        <div id="pokemon-details" class="row justify-content-center"></div>
+    </div>
+    <script>
+        // Function to get query parameters
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                name: params.get('name')
+            };
+        }
+        
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const { name } = getQueryParams();
+            if (name) {
+                fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
+                    .then((res) => res.json())
+                    .then((pokemon) => {
+                        document.getElementById('pokemon-name').textContent = pokemon.name;
+
+                        const id = pokemon.id;
+                        const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+
+                        const stats = pokemon.stats.map(stat => {
+                            const statName = stat.stat.name.replace('-', ' ');
+                            const baseStat = stat.base_stat;
+                            const maxStat = 255; 
+                            const statPercentage = (baseStat / maxStat) * 255;
+
+                            return `
+                                <p class="card-text">${statName}: ${baseStat}</p>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar" role="progressbar" style="width: ${statPercentage}%;" aria-valuenow="${baseStat}" aria-valuemin="0" aria-valuemax="${maxStat}">${baseStat}</div>
+                                </div>
+                            `;
+                        }).join('');
+
+                        const details = `
+                            <div class="col-5">
+                                <div class="card mx-auto">
+                                  <div class="font">
+                                    <img src="${imageUrl}" class="card-img-top" alt="${pokemon.name}">
+                                    <div class="card-body">
+                                        <p class="card-text">Height: ${pokemon.height}</p>
+                                        <p class="card-text">Weight: ${pokemon.weight}</p>
+                                        <p class="card-text">Base Experience: ${pokemon.base_experience}</p>
+                                        ${stats}
+                                        <p class="card-text">Types: ${pokemon.types.map(t => `<a href="type.html?type=${t.type.name}">${t.type.name}</a>`).join(', ')}</p>
+                                        <p class="card-text">Abilities: ${pokemon.abilities.map(a => `<a href="ability.html?ability=${a.ability.name}">${a.ability.name}</a>`).join(', ')}</p>
+                                        <button onclick="goBack()" class="btn btn-custom">Back</button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        document.getElementById('pokemon-details').innerHTML = details;
+                    })
+                    .catch((err) => console.error(err));
+            } else {
+                document.getElementById('pokemon-name').textContent = 'Pokémon not found';
+            }
+        });
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"
+    ></script>
+</body>
+</html>
